@@ -7,7 +7,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:30082")   // ✅ This fixes CORS for frontend
 public class AuthController {
     private final UserService userService;
 
