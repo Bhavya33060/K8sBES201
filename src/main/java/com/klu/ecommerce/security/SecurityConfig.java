@@ -28,14 +28,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-       http
-    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-    .csrf().disable()
-    .authorizeHttpRequests()
-    .antMatchers("/back1/api/auth/**", "/back1/api/products/**", "/back1/api/payments/**").permitAll()
-    .anyRequest().authenticated()
-    .and()
-    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // ✅ Allow both /auth/** and /back1/api/auth/**
+                        .antMatchers("/auth/**", "/api/auth/**", "/back1/api/auth/**").permitAll()
+                        // ✅ Allow public product/payment APIs
+                        .antMatchers("/api/products/**", "/back1/api/products/**", "/api/payments/**", "/back1/api/payments/**").permitAll()
+                        // Everything else needs authentication
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
